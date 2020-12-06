@@ -327,6 +327,47 @@ public class StringTemplate {
         
     }
 
+    public String toString(Map<String, Object> params) throws IOException{
+    	StringBuilder sb = new StringBuilder();
+    	toString(sb, params);
+    	return sb.toString();
+    }
+    
+    private void toString(StringBuilder sb, Map<String, Object> params) throws IOException{
+        
+        if(vars.isEmpty()) {
+        	return;
+        }
+        
+        for(int i=0;i<vars.size();i++ ){
+            StringTemplateVar p = vars.get(i);
+            
+            if(i == 0 && p.getStart() != null){
+                sb.append(p.getStart());
+            }
+
+            Object v = params.get(p.getId());
+            
+            if(v instanceof VarParser) {
+            	((VarParser)v).parse(sb);
+            }
+            else
+            if(v instanceof StringTemplate) {
+            	((StringTemplate)v).toString(sb, params);
+            }
+            else
+            if(v != null) {
+            	sb.append(String.valueOf(v));
+            }
+            
+            if(p.getEnd() != null){
+            	sb.append(p.getEnd());
+            }
+            
+        }
+        
+    }
+    
     public void toWriter(Writer writter, Map<String, Object> params) throws IOException{
         
         if(vars.isEmpty()) {
@@ -403,6 +444,8 @@ public class StringTemplate {
 	public static interface VarParser{
 		
 		void parse(Writer writter) throws IOException;
+		
+		void parse(StringBuilder builder) throws IOException;
 		
 		String parse() throws IOException;
 	}
