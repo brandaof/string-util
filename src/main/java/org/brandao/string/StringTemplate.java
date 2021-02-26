@@ -404,7 +404,7 @@ public class StringTemplate {
         
     }
     
-    public Map<String,List<String>> getParameters( String value ){
+    public Map<String,List<String>> getParametersList( String value ){
         Map<String,List<String>> params = new HashMap<String,List<String>>();
 
         for( int i=0;i<vars.size();i++ ){
@@ -421,6 +421,20 @@ public class StringTemplate {
             }
             
             values.add(tmp);
+        }
+
+        return params;
+    }
+
+    public Map<String,String> getParameters(String value){
+        Map<String,String> params = new HashMap<String,String>();
+
+        for( int i=0;i<vars.size();i++ ){
+        	StringTemplateVar p = vars.get(i);
+            String tmp     = value;
+            tmp            = p.getRegexPrefix().matcher(tmp).replaceAll("");
+            tmp            = p.getRegexSuffix().matcher(tmp).replaceAll("");
+            params.put(p.getId(), tmp);
         }
 
         return params;
@@ -447,7 +461,8 @@ public class StringTemplate {
 		
 		void parse(StringBuilder builder) throws IOException;
 		
-		String parse() throws IOException;
+		String parse(String value) throws IOException;
+		
 	}
 	
 }
